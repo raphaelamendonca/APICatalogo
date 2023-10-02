@@ -31,7 +31,7 @@ namespace APICatalago.Controllers
             return produtos;
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "ObterProduto")]
         public ActionResult<Produto> Get(int id)
         {
             var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
@@ -44,6 +44,22 @@ namespace APICatalago.Controllers
             return produto;
         }
 
+        [HttpPost]
+        //O método escrito desta forma (apenas com o ActionResult),indica que retorna apenas as mensagens de status HTTP, ou seja, ele não retorna um tipo
+        public ActionResult Post(Produto produto)
+        {
+            if(produto is null)
+            {
+                return BadRequest();
+            }
+
+            //Recebe o produto e inclui no contexto do EF
+            _context.Produtos.Add(produto);
+            //Persiste os dados no banco
+            _context.SaveChanges();
+
+            return new CreatedAtRouteResult("ObterProduto", new { id = produto.CategoriaId}, produto);
+        }
 
     }
 }
