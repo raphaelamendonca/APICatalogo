@@ -1,3 +1,4 @@
+using System.Numerics;
 using APICatalago.Context;
 using APICatalago.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +18,29 @@ namespace APICatalago.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Categoria>> Get(){
+        public ActionResult<IEnumerable<Categoria>> Get()
+        {
             var categorias = _context.Categorias.ToList();
 
-            if(categorias is null){
+            if(categorias is null)
+            {
                 return NotFound("Categorias não encontradas.");
             }
             
             return categorias;
+        }
+
+        [HttpGet("{id:int}", Name = "ObterCategoria")]
+        public ActionResult<Categoria> Get(int id)
+        {
+            var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+
+            if(categoria is null)
+            {
+                return NotFound("Categoria não encontrada.");
+            }
+
+            return categoria;
         }
 
     }
