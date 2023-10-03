@@ -33,7 +33,7 @@ namespace APICatalago.Controllers
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public ActionResult<Categoria> Get(int id)
         {
-            var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+            var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
 
             if(categoria is null)
             {
@@ -55,6 +55,22 @@ namespace APICatalago.Controllers
             _context.SaveChanges();
 
             return new CreatedAtRouteResult("ObterCategoria", new {id = categoria.CategoriaId}, categoria);
+        }
+
+        [HttpPut("{id:int}")]
+        public ActionResult Put(int id, Categoria categoria)
+        {
+            if(id != categoria.CategoriaId)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(categoria).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            _context.SaveChanges();
+
+            return Ok(categoria);  
+
+
         }
 
     }
