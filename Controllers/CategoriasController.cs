@@ -21,7 +21,7 @@ namespace APICatalago.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Categoria>> Get()
         {
-            var categorias = _context.Categorias.ToList();
+            var categorias = _context.Categorias.AsNoTracking().ToList();
 
             if(categorias is null)
             {
@@ -34,7 +34,7 @@ namespace APICatalago.Controllers
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public ActionResult<Categoria> Get(int id)
         {
-            var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
+            var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
 
             if(categoria is null)
             {
@@ -47,7 +47,7 @@ namespace APICatalago.Controllers
         [HttpGet("CategoriasEProdutos")]
         public ActionResult<IEnumerable<Categoria>> GetCategoriasEProdutos()
         {
-            var resultado = _context.Categorias.Include(p => p.Produtos).ToList();
+            var resultado = _context.Categorias.AsNoTracking().Include(p => p.Produtos).ToList();
             return resultado;
         }
 

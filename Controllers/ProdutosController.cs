@@ -1,6 +1,7 @@
 using APICatalago.Context;
 using APICatalago.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace APICatalago.Controllers
 {
@@ -21,7 +22,7 @@ namespace APICatalago.Controllers
         //O recurso ActionResult permite que o método retorne tanto a lista de produtos, quanto todos os métodos pertencentes ao tipo de retorno suportados por ActionResult, como, por exemplo o NotFound()
         public ActionResult<IEnumerable<Produto>> Get()
         {
-            var produtos = _context.Produtos.ToList();
+            var produtos = _context.Produtos.AsNoTracking().ToList();
 
             if(produtos is null)
             {
@@ -34,7 +35,7 @@ namespace APICatalago.Controllers
         [HttpGet("{id:int}", Name = "ObterProduto")]
         public ActionResult<Produto> Get(int id)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
 
             if(produto is null)
             {
