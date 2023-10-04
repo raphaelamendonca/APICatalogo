@@ -2,6 +2,7 @@ using System.Numerics;
 using APICatalago.Context;
 using APICatalago.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace APICatalago.Controllers
 {
@@ -41,6 +42,13 @@ namespace APICatalago.Controllers
             }
 
             return categoria;
+        }
+        
+        [HttpGet("CategoriasEProdutos")]
+        public ActionResult<IEnumerable<Categoria>> GetCategoriasEProdutos()
+        {
+            var resultado = _context.Categorias.Include(p => p.Produtos).ToList();
+            return resultado;
         }
 
         [HttpPost]
