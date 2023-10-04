@@ -21,78 +21,122 @@ namespace APICatalago.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Categoria>> Get()
         {
-            var categorias = _context.Categorias.AsNoTracking().ToList();
-
-            if(categorias is null)
+            try
             {
-                return NotFound("Categorias não encontradas.");
+                var categorias = _context.Categorias.AsNoTracking().ToList();
+
+                if(categorias is null)
+                {
+                    return NotFound("Categorias não encontradas.");
+                }
+                
+                return categorias;
             }
-            
-            return categorias;
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro ao tratar a sua solicitação");
+            }
         }
 
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public ActionResult<Categoria> Get(int id)
         {
-            var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
-
-            if(categoria is null)
+            try
             {
-                return NotFound("Categoria não encontrada.");
-            }
+                var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
 
-            return categoria;
+                if(categoria is null)
+                {
+                    return NotFound($"Categoria de id {id} não encontrada.");
+                }
+
+                return categoria;
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro ao tratar a sua solicitação");
+            }
         }
         
         [HttpGet("CategoriasEProdutos")]
         public ActionResult<IEnumerable<Categoria>> GetCategoriasEProdutos()
         {
-            var resultado = _context.Categorias.AsNoTracking().Include(p => p.Produtos).ToList();
-            return resultado;
+            try
+            {
+                var resultado = _context.Categorias.AsNoTracking().Include(p => p.Produtos).ToList();
+                return resultado;
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro ao tratar a sua solicitação");
+            }
         }
 
         [HttpPost]
         public ActionResult Post(Categoria categoria)
         {
-            if(categoria is null)
+            try
             {
-                return BadRequest();
+                if(categoria is null)
+                {
+                    return BadRequest();
+                }
+
+                _context.Categorias.Add(categoria);
+                _context.SaveChanges();
+
+                return new CreatedAtRouteResult("ObterCategoria", new {id = categoria.CategoriaId}, categoria);
             }
-
-            _context.Categorias.Add(categoria);
-            _context.SaveChanges();
-
-            return new CreatedAtRouteResult("ObterCategoria", new {id = categoria.CategoriaId}, categoria);
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro ao tratar a sua solicitação");
+            }
         }
 
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, Categoria categoria)
         {
-            if(id != categoria.CategoriaId)
+            try
             {
-                return BadRequest();
+                if(id != categoria.CategoriaId)
+                {
+                    return BadRequest();
+                }
+
+                _context.Entry(categoria).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                _context.SaveChanges();
+
+                return Ok(categoria);  
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro ao tratar a sua solicitação");
             }
 
-            _context.Entry(categoria).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            _context.SaveChanges();
-
-            return Ok(categoria);  
         }
 
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
-
-            if(categoria is null)
+            try
             {
-                return NotFound("Categoria não encontrada.");
+                var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
+
+                if(categoria is null)
+                {
+                    return NotFound("Categoria não encontrada.");
+                }
+
+                _context.Categorias.Remove(categoria);
+                _context.SaveChanges();
+
+                return Ok(categoria);
             }
-
-            _context.Categorias.Remove(categoria);
-            _context.SaveChanges();
-
-            return Ok(categoria);
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro ao tratar a sua solicitação");
+             
+            }
         }
 
     }
