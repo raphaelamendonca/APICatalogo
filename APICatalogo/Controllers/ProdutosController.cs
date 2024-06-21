@@ -19,7 +19,7 @@ public class ProdutosController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Produto>> Get()
     {
-        var produtos = _context.Produtos.ToList();
+        var produtos = _context.Produtos.AsNoTracking().ToList();
 
         if (!produtos.Any())
             return NotFound("Produtos não encontrados");
@@ -30,7 +30,7 @@ public class ProdutosController : ControllerBase
     [HttpGet("{id:int}", Name="ObterProduto")]
     public ActionResult<Produto> GetById(int id)
     {
-        var produto = _context.Produtos.FirstOrDefault(x => x.ProdutoId == id);
+        var produto = _context.Produtos.AsNoTracking().FirstOrDefault(x => x.ProdutoId == id);
        
         if (produto == null)
             return NotFound("Produto não encontrado");
@@ -41,7 +41,7 @@ public class ProdutosController : ControllerBase
     [HttpGet("categoria/{id:int}", Name = "ObterProdutosPorCategoria")]
     public ActionResult<IEnumerable<Produto>> GetByCategoriaId(int id)
     {
-        var produtos = _context.Produtos.Include(x => x.Categoria).Where(x => x.CategoriaId == id).ToList();
+        var produtos = _context.Produtos.AsNoTracking().Include(x => x.Categoria).Where(x => x.CategoriaId == id).ToList();
 
         if (!produtos.Any())
             return NotFound("Não existem produtos cadastrados para esta categoria");

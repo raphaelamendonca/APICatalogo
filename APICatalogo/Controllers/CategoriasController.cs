@@ -1,6 +1,7 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers;
 
@@ -20,7 +21,7 @@ public class CategoriasController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> Get()
     {
-        var categorias = _context.Categorias.ToList();
+        var categorias = _context.Categorias.AsNoTracking().ToList();
 
         if (!categorias.Any())
             return NotFound("Categorias não encontradas");
@@ -31,7 +32,7 @@ public class CategoriasController : ControllerBase
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public ActionResult<Categoria> GetById(int id)
     {
-        var categoria = _context.Categorias.FirstOrDefault(x => x.CategoriaId == id);
+        var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(x => x.CategoriaId == id);
 
         if (categoria is null)
             return NotFound("Categoria não encontrada");
