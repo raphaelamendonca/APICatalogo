@@ -1,6 +1,7 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers;
 
@@ -35,6 +36,17 @@ public class ProdutosController : ControllerBase
             return NotFound("Produto não encontrado");
 
         return produto;
+    }
+
+    [HttpGet("categoria/{id:int}", Name = "ObterProdutosPorCategoria")]
+    public ActionResult<IEnumerable<Produto>> GetByCategoriaId(int id)
+    {
+        var produtos = _context.Produtos.Include(x => x.Categoria).Where(x => x.CategoriaId == id).ToList();
+
+        if (!produtos.Any())
+            return NotFound("Não existem produtos cadastrados para esta categoria");
+
+        return produtos;
     }
 
     [HttpPost]
