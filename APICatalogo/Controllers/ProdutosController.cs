@@ -19,71 +19,119 @@ public class ProdutosController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Produto>> Get()
     {
-        var produtos = _context.Produtos.AsNoTracking().ToList();
+        try
+        {
+            var produtos = _context.Produtos.AsNoTracking().ToList();
 
-        if (!produtos.Any())
-            return NotFound("Produtos não encontrados");
+            if (!produtos.Any())
+                return NotFound("Produtos não encontrados.");
 
-        return produtos;
+            return produtos;
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+               "Ocorreu um erro ao tratar a sua solicitação. Tente novamente mais tarde.");
+        }
     }
 
     [HttpGet("{id:int}", Name="ObterProduto")]
     public ActionResult<Produto> GetById(int id)
     {
-        var produto = _context.Produtos.AsNoTracking().FirstOrDefault(x => x.ProdutoId == id);
-       
-        if (produto == null)
-            return NotFound("Produto não encontrado");
+        try
+        {
+            var produto = _context.Produtos.AsNoTracking().FirstOrDefault(x => x.ProdutoId == id);
 
-        return produto;
+            if (produto == null)
+                return NotFound($"Produto com id={id} não encontrado.");
+
+            return produto;
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+               "Ocorreu um erro ao tratar a sua solicitação. Tente novamente mais tarde.");
+        }
     }
 
     [HttpGet("categoria/{id:int}", Name = "ObterProdutosPorCategoria")]
     public ActionResult<IEnumerable<Produto>> GetByCategoriaId(int id)
     {
-        var produtos = _context.Produtos.AsNoTracking().Include(x => x.Categoria).Where(x => x.CategoriaId == id).ToList();
+        try
+        {
+            var produtos = _context.Produtos.AsNoTracking().Include(x => x.Categoria).Where(x => x.CategoriaId == id).ToList();
 
-        if (!produtos.Any())
-            return NotFound("Não existem produtos cadastrados para esta categoria");
+            if (!produtos.Any())
+                return NotFound("Não existem produtos cadastrados para esta categoria.");
 
-        return produtos;
+            return produtos;
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                   "Ocorreu um erro ao tratar a sua solicitação. Tente novamente mais tarde.");
+        }
     }
 
     [HttpPost]
     public ActionResult<Produto> Post(Produto produto)
     {
-        if (produto is null)
-            return BadRequest();
+        try
+        {
+            if (produto is null)
+                return BadRequest("Dados inválidos.");
 
-        _context.Produtos.Add(produto);
-        _context.SaveChanges();
+            _context.Produtos.Add(produto);
+            _context.SaveChanges();
 
-        return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
+            return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "Ocorreu um erro ao tratar a sua solicitação. Tente novamente mais tarde.");
+        }
     }
 
     [HttpPut("{id:int}")]
     public ActionResult<Produto> Put(int id, Produto produto)
     {
-        if(id != produto.ProdutoId)
-            return BadRequest();
-        
-        _context.Entry(produto).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-        _context.SaveChanges();
+        try
+        {
+            if (id != produto.ProdutoId)
+                return BadRequest("Dados inválidos.");
 
-        return Ok(produto);
+            _context.Entry(produto).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            _context.SaveChanges();
+
+            return Ok(produto);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+               "Ocorreu um erro ao tratar a sua solicitação. Tente novamente mais tarde.");
+        }
     }
 
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
     {
-        var produto = _context.Produtos.FirstOrDefault(x => x.ProdutoId == id);
+        try
+        {
+            var produto = _context.Produtos.FirstOrDefault(x => x.ProdutoId == id);
 
-        if (produto is null)
-            return NotFound("Produto não encontrado");
+            if (produto is null)
+                return NotFound($"Produto com id={id} não encontrado.");
 
-        _context.Produtos.Remove(produto);
-        _context.SaveChanges();
+            _context.Produtos.Remove(produto);
+            _context.SaveChanges();
 
-        return Ok(produto);
+            return Ok(produto);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "Ocorreu um erro ao tratar a sua solicitação. Tente novamente mais tarde.");
+        }
     }
 }
